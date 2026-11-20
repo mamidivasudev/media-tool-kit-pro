@@ -8,9 +8,32 @@ enum SizeUnit { px, cm, mm }
 
 enum FitMode { crop, pad, stretch }
 
+/// A ready-made size, e.g. a passport photo.
+class ExactPreset {
+  final String label;
+  final SizeUnit unit;
+  final double width;
+  final double height;
+
+  /// Suggested file-size limit in KB, or null to leave the limit alone.
+  final int? kb;
+
+  const ExactPreset(this.label, this.unit, this.width, this.height, {this.kb});
+}
+
 /// Provider for "Exact Size": makes a picture an exact width x height (in
 /// pixels, cm or mm) and, optionally, no bigger than a number of KB.
 class ExactSizeProvider extends BaseImageProvider {
+  static const List<ExactPreset> presets = [
+    ExactPreset('Passport 35×45 mm', SizeUnit.mm, 35, 45),
+    ExactPreset('Stamp size 25×35 mm', SizeUnit.mm, 25, 35),
+    ExactPreset('US passport / visa 2×2 in', SizeUnit.mm, 51, 51, kb: 240),
+    ExactPreset('Canada 50×70 mm', SizeUnit.mm, 50, 70),
+    ExactPreset('China 33×48 mm', SizeUnit.mm, 33, 48),
+    ExactPreset('Exam form 200×230 px', SizeUnit.px, 200, 230, kb: 50),
+    ExactPreset('Signature 140×60 px', SizeUnit.px, 140, 60, kb: 30),
+  ];
+
   static const List<int> dpiChoices = [72, 96, 150, 300];
   static const List<int> targetsKb = [20, 30, 50, 100, 200, 500];
   static const List<ImageFormat> formats = [ImageFormat.jpg, ImageFormat.webp];
@@ -59,6 +82,21 @@ class ExactSizeProvider extends BaseImageProvider {
 
   bool get validSize =>
       _width > 0 && _height > 0 && pixelWidth <= 12000 && pixelHeight <= 12000;
+
+  bool isPreset(ExactPreset p) =>
+      p.unit == _unit && p.width == _width && p.height == _height;
+
+  /// Fills in the unit and size (and file-size limit) from [preset].
+  void applyPreset(ExactPreset preset) {
+    _unit = preset.unit;
+    _width = preset.width;
+    _height = preset.height;
+    if (preset.kb != null) {
+      _limitSize = true;
+      _targetKb = preset.kb!;
+    }
+    notifyListeners();
+  }
 
   void setUnit(SizeUnit unit) {
     _unit = unit;

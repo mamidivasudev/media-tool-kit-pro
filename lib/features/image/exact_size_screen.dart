@@ -25,6 +25,17 @@ class _ExactSizeScreenState extends State<ExactSizeScreen> {
     super.dispose();
   }
 
+  /// Shows a number in [ctrl] when the provider changed it (a preset was
+  /// tapped) but leaves the box alone while the user is typing or clearing it.
+  void _syncNum(TextEditingController ctrl, double value) {
+    final typed = double.tryParse(ctrl.text);
+    if (typed != null && typed != value) {
+      ctrl.text = value == value.roundToDouble()
+          ? value.toStringAsFixed(0)
+          : value.toString();
+    }
+  }
+
   /// A preset chip was tapped: show its number in the KB box.
   void _syncKb(ExactSizeProvider p) {
     final typed = int.tryParse(_kbCtrl.text);
@@ -52,6 +63,8 @@ class _ExactSizeScreenState extends State<ExactSizeScreen> {
       progressMessage: 'Making your image...',
       children: (context, p) {
         _syncKb(p);
+        _syncNum(_widthCtrl, p.width);
+        _syncNum(_heightCtrl, p.height);
         final unitName = _unitLabel(p.unit);
         return [
           ImagePickSection(
@@ -64,6 +77,26 @@ class _ExactSizeScreenState extends State<ExactSizeScreen> {
             onPick: p.pickImage,
           ),
           if (p.isReady) ...[
+            const SizedBox(height: 20),
+            Text(
+              'Quick sizes',
+              style: Theme.of(
+                context,
+              ).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w700),
+            ),
+            const SizedBox(height: 8),
+            Wrap(
+              spacing: 8,
+              runSpacing: 8,
+              children: [
+                for (final preset in ExactSizeProvider.presets)
+                  ChoiceChip(
+                    label: Text(preset.label),
+                    selected: p.isPreset(preset),
+                    onSelected: p.isBusy ? null : (_) => p.applyPreset(preset),
+                  ),
+              ],
+            ),
             const SizedBox(height: 20),
             ChoiceSection<SizeUnit>(
               title: 'Size unit',
