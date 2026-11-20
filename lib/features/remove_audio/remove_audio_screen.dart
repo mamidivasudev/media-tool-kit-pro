@@ -15,19 +15,22 @@ class RemoveAudioScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text('Remove Audio')),
-      body: Consumer<RemoveAudioProvider>(
-        builder: (context, provider, _) {
-          return Stack(
-            children: [
-              _buildBody(context, provider),
-              if (provider.state == ProcessingState.processing)
-                ProgressOverlay(
-                  progress: provider.progress,
-                  message: 'Removing audio...',
-                ),
-            ],
-          );
-        },
+      body: SafeArea(
+        top: false,
+        child: Consumer<RemoveAudioProvider>(
+          builder: (context, provider, _) {
+            return Stack(
+              children: [
+                _buildBody(context, provider),
+                if (provider.state == ProcessingState.processing)
+                  ProgressOverlay(
+                    progress: provider.progress,
+                    message: 'Removing audio...',
+                  ),
+              ],
+            );
+          },
+        ),
       ),
     );
   }
@@ -49,10 +52,9 @@ class RemoveAudioScreen extends StatelessWidget {
           if (provider.inputPath != null) ...[
             Text(
               'Selected Video',
-              style: Theme.of(context)
-                  .textTheme
-                  .titleSmall
-                  ?.copyWith(fontWeight: FontWeight.w700),
+              style: Theme.of(
+                context,
+              ).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w700),
             ),
             const SizedBox(height: 8),
             VideoThumbnail(filePath: provider.inputPath!),
@@ -72,7 +74,8 @@ class RemoveAudioScreen extends StatelessWidget {
           const SizedBox(height: 16),
 
           FilledButton.icon(
-            onPressed: provider.hasInput &&
+            onPressed:
+                provider.hasInput &&
                     provider.state != ProcessingState.processing
                 ? () => context.read<RemoveAudioProvider>().process()
                 : null,
@@ -123,16 +126,19 @@ class _RemoveAudioResultState extends State<_RemoveAudioResult> {
           ),
           child: Row(
             children: [
-              const Icon(Icons.check_circle_rounded,
-                  color: Colors.green, size: 24),
+              const Icon(
+                Icons.check_circle_rounded,
+                color: Colors.green,
+                size: 24,
+              ),
               const SizedBox(width: 12),
               Expanded(
                 child: Text(
                   'Audio removed successfully!',
                   style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                        fontWeight: FontWeight.w700,
-                        color: Colors.green,
-                      ),
+                    fontWeight: FontWeight.w700,
+                    color: Colors.green,
+                  ),
                 ),
               ),
             ],
@@ -141,9 +147,11 @@ class _RemoveAudioResultState extends State<_RemoveAudioResult> {
         const SizedBox(height: 16),
         FilledButton.icon(
           onPressed: () => setState(() => _showPreview = !_showPreview),
-          icon: Icon(_showPreview
-              ? Icons.visibility_off_rounded
-              : Icons.play_circle_outline_rounded),
+          icon: Icon(
+            _showPreview
+                ? Icons.visibility_off_rounded
+                : Icons.play_circle_outline_rounded,
+          ),
           label: Text(_showPreview ? 'Hide Preview' : 'Preview'),
         ),
         if (_showPreview) ...[
@@ -161,8 +169,9 @@ class _RemoveAudioResultState extends State<_RemoveAudioResult> {
                   if (context.mounted) {
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(
-                        content:
-                            Text(ok ? 'Saved to gallery!' : 'Failed to save.'),
+                        content: Text(
+                          ok ? 'Saved to gallery!' : 'Failed to save.',
+                        ),
                         behavior: SnackBarBehavior.floating,
                       ),
                     );
@@ -172,11 +181,13 @@ class _RemoveAudioResultState extends State<_RemoveAudioResult> {
               ? const SizedBox(
                   width: 18,
                   height: 18,
-                  child: CircularProgressIndicator(strokeWidth: 2))
+                  child: CircularProgressIndicator(strokeWidth: 2),
+                )
               : const Icon(Icons.save_alt_rounded),
           label: const Text('Save to Gallery'),
           style: FilledButton.styleFrom(
-              minimumSize: const Size(double.infinity, 52)),
+            minimumSize: const Size(double.infinity, 52),
+          ),
         ),
         const SizedBox(height: 12),
         OutlinedButton.icon(
@@ -184,7 +195,8 @@ class _RemoveAudioResultState extends State<_RemoveAudioResult> {
           icon: const Icon(Icons.share_rounded),
           label: const Text('Share'),
           style: OutlinedButton.styleFrom(
-              minimumSize: const Size(double.infinity, 52)),
+            minimumSize: const Size(double.infinity, 52),
+          ),
         ),
       ],
     );

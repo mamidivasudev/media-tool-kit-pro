@@ -20,19 +20,23 @@ class TrimmerScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text('Video Trimmer')),
-      body: Consumer<TrimmerProvider>(
-        builder: (context, provider, _) {
-          return Stack(
-            children: [
-              _buildBody(context, provider),
-              if (provider.state == ProcessingState.processing)
-                ProgressOverlay(
-                  progress: provider.progress,
-                  message: 'Trimming video...',
-                ),
-            ],
-          );
-        },
+      // SafeArea keeps the Export button above the phone's navigation bar.
+      body: SafeArea(
+        top: false,
+        child: Consumer<TrimmerProvider>(
+          builder: (context, provider, _) {
+            return Stack(
+              children: [
+                _buildBody(context, provider),
+                if (provider.state == ProcessingState.processing)
+                  ProgressOverlay(
+                    progress: provider.progress,
+                    message: 'Trimming video...',
+                  ),
+              ],
+            );
+          },
+        ),
       ),
     );
   }
@@ -426,7 +430,7 @@ class _TrimPreviewState extends State<_TrimPreview> {
       );
     }
     final aspect = _controller.value.aspectRatio;
-    return ClipRRect(
+    final video = ClipRRect(
       borderRadius: BorderRadius.circular(16),
       child: Container(
         color: Colors.black,
@@ -478,6 +482,24 @@ class _TrimPreviewState extends State<_TrimPreview> {
           ],
         ),
       ),
+    );
+    return Column(
+      children: [
+        video,
+        const SizedBox(height: 8),
+        ValueListenableBuilder<VideoPlayerValue>(
+          valueListenable: _controller,
+          builder: (context, value, _) => FilledButton.tonalIcon(
+            onPressed: _togglePlay,
+            icon: Icon(value.isPlaying
+                ? Icons.pause_rounded
+                : Icons.play_arrow_rounded),
+            label: Text(value.isPlaying ? 'Pause' : 'Play selected part'),
+            style: FilledButton.styleFrom(
+                minimumSize: const Size(double.infinity, 48)),
+          ),
+        ),
+      ],
     );
   }
 }

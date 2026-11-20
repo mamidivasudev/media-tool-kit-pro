@@ -27,19 +27,22 @@ class MergerScreen extends StatelessWidget {
           ),
         ],
       ),
-      body: Consumer<MergerProvider>(
-        builder: (context, provider, _) {
-          return Stack(
-            children: [
-              _buildBody(context, provider),
-              if (provider.state == ProcessingState.processing)
-                ProgressOverlay(
-                  progress: provider.progress,
-                  message: 'Merging videos...',
-                ),
-            ],
-          );
-        },
+      body: SafeArea(
+        top: false,
+        child: Consumer<MergerProvider>(
+          builder: (context, provider, _) {
+            return Stack(
+              children: [
+                _buildBody(context, provider),
+                if (provider.state == ProcessingState.processing)
+                  ProgressOverlay(
+                    progress: provider.progress,
+                    message: 'Merging videos...',
+                  ),
+              ],
+            );
+          },
+        ),
       ),
     );
   }
@@ -61,9 +64,9 @@ class MergerScreen extends StatelessWidget {
           if (provider.selectedVideos.isNotEmpty) ...[
             Text(
               'Selected Videos (${provider.selectedVideos.length})',
-              style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                    fontWeight: FontWeight.w700,
-                  ),
+              style: Theme.of(
+                context,
+              ).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w700),
             ),
             const SizedBox(height: 8),
             ReorderableListView.builder(
@@ -113,7 +116,8 @@ class MergerScreen extends StatelessWidget {
 
           // Merge button
           FilledButton.icon(
-            onPressed: provider.canMerge &&
+            onPressed:
+                provider.canMerge &&
                     provider.state != ProcessingState.processing
                 ? () => context.read<MergerProvider>().mergeVideos()
                 : null,
@@ -165,8 +169,11 @@ class _ResultSectionState extends State<_ResultSection> {
           ),
           child: Row(
             children: [
-              const Icon(Icons.check_circle_rounded,
-                  color: Colors.green, size: 24),
+              const Icon(
+                Icons.check_circle_rounded,
+                color: Colors.green,
+                size: 24,
+              ),
               const SizedBox(width: 12),
               Expanded(
                 child: Column(
@@ -175,9 +182,9 @@ class _ResultSectionState extends State<_ResultSection> {
                     Text(
                       'Merge Complete!',
                       style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                            fontWeight: FontWeight.w700,
-                            color: Colors.green,
-                          ),
+                        fontWeight: FontWeight.w700,
+                        color: Colors.green,
+                      ),
                     ),
                     Text(
                       'Your videos have been merged successfully.',
@@ -270,8 +277,8 @@ class InfoBanner extends StatelessWidget {
             child: Text(
               text,
               style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                    color: colorScheme.onPrimaryContainer,
-                  ),
+                color: colorScheme.onPrimaryContainer,
+              ),
             ),
           ),
         ],
