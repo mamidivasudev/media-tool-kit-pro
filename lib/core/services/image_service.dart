@@ -90,6 +90,28 @@ class ImageService {
     );
   }
 
+  /// Makes a picture exactly [width] x [height] pixels. [fit] decides how the
+  /// original is made to match: 'crop' fills the frame and trims the edges,
+  /// 'pad' keeps the whole picture and adds white bars, 'stretch' squeezes it.
+  Future<bool> fitToSize({
+    required String input,
+    required String output,
+    required int width,
+    required int height,
+    required String fit,
+    required ImageFormat target,
+    int quality = 92,
+  }) {
+    final ops = switch (fit) {
+      'pad' => 'scale=$width:$height:force_original_aspect_ratio=decrease:'
+          'flags=lanczos,pad=$width:$height:(ow-iw)/2:(oh-ih)/2:color=white',
+      'stretch' => 'scale=$width:$height:flags=lanczos',
+      _ => 'scale=$width:$height:force_original_aspect_ratio=increase:'
+          'flags=lanczos,crop=$width:$height',
+    };
+    return _process(input, output, target, ops: ops, quality: quality);
+  }
+
   /// Shrinks the file by lowering quality and optionally the pixel size.
   Future<bool> compress({
     required String input,

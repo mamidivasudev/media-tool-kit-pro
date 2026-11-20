@@ -19,6 +19,7 @@ import 'providers/frame_provider.dart';
 import 'providers/replace_audio_provider.dart';
 import 'providers/image/image_compress_provider.dart';
 import 'providers/image/image_resize_provider.dart';
+import 'providers/image/exact_size_provider.dart';
 import 'providers/image/image_convert_provider.dart';
 import 'providers/image/images_to_pdf_provider.dart';
 import 'providers/image/image_crop_provider.dart';
@@ -58,6 +59,7 @@ void main() async {
         ChangeNotifierProvider(create: (_) => ReplaceAudioProvider()),
         ChangeNotifierProvider(create: (_) => ImageCompressProvider()),
         ChangeNotifierProvider(create: (_) => ImageResizeProvider()),
+        ChangeNotifierProvider(create: (_) => ExactSizeProvider()),
         ChangeNotifierProvider(create: (_) => ImageConvertProvider()),
         ChangeNotifierProvider(create: (_) => ImagesToPdfProvider()),
         ChangeNotifierProvider(create: (_) => ImageCropProvider()),

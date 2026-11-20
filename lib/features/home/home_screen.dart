@@ -17,6 +17,7 @@ import '../frame/frame_screen.dart';
 import '../replace_audio/replace_audio_screen.dart';
 import '../image/image_compress_screen.dart';
 import '../image/image_resize_screen.dart';
+import '../image/exact_size_screen.dart';
 import '../image/image_convert_screen.dart';
 import '../image/images_to_pdf_screen.dart';
 import '../image/image_crop_screen.dart';
@@ -67,7 +68,7 @@ class _HomeScreenState extends State<HomeScreen> {
       body: Column(
         children: [
           Padding(
-            padding: const EdgeInsets.fromLTRB(16, 12, 16, 8),
+            padding: const EdgeInsets.fromLTRB(12, 6, 12, 2),
             child: _buildCategorySelector(context),
           ),
           // PageView gives a smooth, finger-following swipe between tabs.
@@ -89,11 +90,11 @@ class _HomeScreenState extends State<HomeScreen> {
     if (items.isEmpty) return _ComingSoon(category: category);
     return GridView.builder(
       padding: EdgeInsets.fromLTRB(
-          16, 8, 16, 24 + MediaQuery.of(context).viewPadding.bottom),
+          12, 6, 12, 16 + MediaQuery.of(context).viewPadding.bottom),
       gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
         crossAxisCount: 2,
-        mainAxisSpacing: 12,
-        crossAxisSpacing: 12,
+        mainAxisSpacing: 10,
+        crossAxisSpacing: 10,
         childAspectRatio: 1.25,
       ),
       itemCount: items.length,
@@ -104,7 +105,7 @@ class _HomeScreenState extends State<HomeScreen> {
   PreferredSizeWidget _buildAppBar(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
     return AppBar(
-      toolbarHeight: 68,
+      toolbarHeight: 60,
       backgroundColor: colorScheme.primaryContainer,
       centerTitle: false,
       titleSpacing: 20,
@@ -150,6 +151,7 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget _buildCategorySelector(BuildContext context) {
     return SegmentedButton<_Category>(
       showSelectedIcon: false,
+      expandedInsets: EdgeInsets.zero,
       segments: [
         for (final c in _Category.values)
           ButtonSegment(value: c, label: Text(c.label), icon: Icon(c.icon)),
@@ -288,6 +290,14 @@ class _HomeScreenState extends State<HomeScreen> {
       subtitle: 'Pixels, percent or presets',
       color: Colors.indigo,
       screen: const ImageResizeScreen(),
+    ),
+    _FeatureItem(
+      emoji: '📏',
+      title: 'Exact Size',
+      category: _Category.image,
+      subtitle: 'Size in px or cm + KB limit',
+      color: Colors.teal,
+      screen: const ExactSizeScreen(),
     ),
     _FeatureItem(
       emoji: '🔁',
